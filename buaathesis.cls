@@ -237,7 +237,8 @@ The LaTeX template for thesis of BUAA]
 %%%%%%%%%% cross reference %%%%%%%%%%
 % 交叉引用
 
-\RequirePackage[xetex,unicode]{hyperref}
+% \RequirePackage[xetex,unicode]{hyperref}
+\RequirePackage[unicode]{hyperref}
 \ifbuaa@color
     \hypersetup{colorlinks}
 \else
