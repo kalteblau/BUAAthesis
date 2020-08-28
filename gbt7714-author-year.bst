@@ -8,7 +8,7 @@
 %% -------------------------------------------------------------------
 %% GB/T 7714-2015 BibTeX Style
 %% https://github.com/CTeX-org/gbt7714-bibtex-style
-%% Version: 2020/03/14 v2.0.1
+%% Version: 2020/06/08 v2.0.2
 %% -------------------------------------------------------------------
 %% Copyright (C) 2016-2020 by Zeping Lee <zepinglee AT gmail.com>
 %% -------------------------------------------------------------------
@@ -35,10 +35,10 @@ INTEGERS {
   italic.journal
   bold.journal.volume
   show.missing.address.publisher
-  space.before.pages
   only.start.page
   show.url
   show.doi
+  show.preprint
   show.note
   show.english.translation
   lang.zh.order
@@ -64,10 +64,10 @@ FUNCTION {load.config}
   #0 'italic.journal :=
   #0 'bold.journal.volume :=
   #1 'show.missing.address.publisher :=
-  #0 'space.before.pages :=
   #0 'only.start.page :=
   #1 'show.url :=
   #1 'show.doi :=
+  #0 'show.preprint :=
   #0 'show.note :=
   #0 'show.english.translation :=
   #1 'lang.zh.order :=
@@ -79,12 +79,14 @@ FUNCTION {load.config}
 
 ENTRY
   { address
+    archivePrefix
     author
     booktitle
     date
     doi
     edition
     editor
+    eprint
     howpublished
     institution
     journal
@@ -100,8 +102,8 @@ ENTRY
     school
     series
     title
-    translator
     translation
+    translator
     url
     urldate
     volume
@@ -493,15 +495,20 @@ FUNCTION {format.names}
 { 's :=
   #1 'nameptr :=
   s num.names$ 'numnames :=
+  ""
   numnames 'namesleft :=
     { namesleft #0 > }
     { s nameptr "{vv~}{ll}{, jj}{, ff}" format.name$ 't :=
+      nameptr #1 >
+        { ", " * }
+        'skip$
+      if$
       nameptr max.num.authors >
-        { bbl.et.al
+        { bbl.et.al *
           #1 'namesleft :=
         }
         { t "others" =
-            { bbl.et.al }
+            { bbl.et.al * }
             { t get.str.lang 'name.lang :=
               name.lang lang.en =
                 { t #1 "{vv~}{ll}{~f{~}}" format.name$
@@ -513,13 +520,10 @@ FUNCTION {format.names}
                 }
                 { t #1 "{ll}{ff}" format.name$ }
               if$
+              *
             }
           if$
         }
-      if$
-      nameptr #1 >
-        { ", " swap$ * * }
-        'skip$
       if$
       nameptr #1 + 'nameptr :=
       namesleft #1 - 'namesleft :=
@@ -1163,6 +1167,13 @@ FUNCTION {hyphenate}
 FUNCTION {format.pages}
 { pages empty$
     { "" }
+    { pages hyphenate }
+  if$
+}
+
+FUNCTION {format.extracted.pages}
+{ pages empty$
+    { "" }
     { pages
       only.start.page
         'extract.before.dash
@@ -1193,11 +1204,8 @@ FUNCTION {format.journal.number}
 FUNCTION {format.journal.pages}
 { pages empty$
     { "" }
-    { space.before.pages
-        { ": " }
-        { ":\penalty0 " }
-      if$
-      format.pages *
+    { ": "
+      format.extracted.pages *
     }
   if$
 }
@@ -1374,6 +1382,27 @@ FUNCTION {check.electronic}
   if$
 }
 
+FUNCTION {format.eprint}
+{ ""
+  archivePrefix empty$ not
+    { archivePrefix * ": " *
+      "\eprint{https://" *
+      archivePrefix "l" change.case$ * ".org/abs/" * eprint * "}{" *
+      eprint * "}" *
+    }
+    { eprint }
+  if$
+}
+
+FUNCTION {output.eprint}
+{ show.preprint eprint empty$ not and
+    { new.block
+      format.eprint output
+    }
+    'skip$
+  if$
+}
+
 FUNCTION {format.note}
 { note empty$ not show.note and
     { note }
@@ -1477,7 +1506,7 @@ FUNCTION {incollection}
   format.edition output
   new.block
   format.address.publisher output
-  format.pages bbl.colon output.after
+  format.extracted.pages bbl.colon output.after
   format.urldate "" output.after
   output.url
   output.doi
@@ -1595,6 +1624,47 @@ FUNCTION {electronic}
   fin.entry
 }
 
+FUNCTION {preprint}
+{ output.bibitem
+  output.translation
+  author empty$ not
+    { format.authors }
+    { editor empty$ not
+        { format.editors }
+        { "empty author and editor in " cite$ * warning$
+          bbl.anonymous
+        }
+      if$
+    }
+  if$
+  output
+  period.between.author.year
+    'new.sentence
+    'skip$
+  if$
+  format.year "year" output.check
+  new.block
+  title.in.journal
+    { format.series.vol.num.title "title" output.check
+      "Z" set.entry.mark
+      format.mark "" output.after
+      new.block
+    }
+    'skip$
+  if$
+  format.translators output
+  new.sentence
+  format.edition output
+  new.block
+  output.eprint
+  format.pages bbl.colon output.after
+  format.urldate "" output.after
+  output.url
+  new.block
+  format.note output
+  fin.entry
+}
+
 FUNCTION {misc}
 { journal empty$ not
     'article
@@ -1602,10 +1672,14 @@ FUNCTION {misc}
         'incollection
         { publisher empty$ not
             'monograph
-            { entry.is.electronic
-                'electronic
-                { "Z" set.entry.mark
-                  monograph
+            { eprint empty$ not show.preprint and
+                'preprint
+                { entry.is.electronic
+                    'electronic
+                    { "Z" set.entry.mark
+                      monograph
+                    }
+                  if$
                 }
               if$
             }
@@ -1694,10 +1768,7 @@ FUNCTION {techreport}
   misc
 }
 
-FUNCTION {unpublished}
-{ "Z" set.entry.mark
-  misc
-}
+FUNCTION {unpublished} { misc }
 
 FUNCTION {default.type} { misc }
 
@@ -2116,17 +2187,21 @@ FUNCTION {begin.bib}
   write$ newline$
   "  \urlstyle{same}\fi"
   write$ newline$
-  show.doi
-    { "\expandafter\ifx\csname href\endcsname\relax"
+  "\expandafter\ifx\csname href\endcsname\relax"
+  write$ newline$
+  "  \DeclareUrlCommand\doi{\urlstyle{rm}}"
+  write$ newline$
+  "  \def\eprint#1#2{#2}"
       write$ newline$
-      "  \DeclareUrlCommand\doi{\urlstyle{rm}}\else"
+  "\else"
+  write$ newline$
+  "  \def\doi#1{\href{https://doi.org/#1}{\nolinkurl{#1}}}"
+  write$ newline$
+  "  \let\eprint\href"
       write$ newline$
-      "  \providecommand\doi[1]{\href{https://doi.org/#1}{\nolinkurl{#1}}}\fi"
+  "\fi"
       write$ newline$
     }
-    'skip$
-  if$
-}
 
 FUNCTION {end.bib}
 { newline$

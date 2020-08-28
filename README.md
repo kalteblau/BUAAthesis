@@ -1,10 +1,10 @@
 # BUAAthesis
 
-北航毕设论文 LaTeX 模板
+北航毕设论文 LaTeX 模板（LuaLaTeX）
 
 ## 项目说明
 
-本分支是从北航开源俱乐部维护的的北航毕设论文的 LaTeX 模板而来，修改原版XeLaTeX编译为当前LuaLaTeX编译
+本分支是从北航开源俱乐部维护的的北航毕设论文的 LaTeX 模板而来，修改原版XeLaTeX编译为当前LuaLaTeX编译。
 
 目前仍在开发中，欢迎关注进展，提交 bug/issue，甚至贡献代码
 
@@ -14,7 +14,7 @@
 
 推荐：
 
-+ TeXLive 2019
++ TeXLive 2020
 
 ## 使用方法
 
@@ -27,7 +27,7 @@
 + `make clean` # 删除编译过程中生成的文件（除了 pdf）
 + `make depclean` # 删除编译过程中生成的文件（包括 pdf）
 
-3. 使用 Visual Studio Code 等软件进行编译，请使用 `xelatex->bibtex->xelatex*2` 方式进行编译；
+3. 使用 Visual Studio Code 等软件进行编译，请使用 `lualatex->bibtex->lualatex*2` 方式进行编译；
 
 ## 参考文献相关
 
