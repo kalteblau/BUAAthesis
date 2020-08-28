@@ -255,7 +255,7 @@ The LaTeX template for thesis of BUAA]
 
 %%%%%%%%%% reference %%%%%%%%%%
 % 参考文献
-\RequirePackage[sort&compress]{natbib}
+\RequirePackage[compress]{natbib}
 \bibpunct{[}{]}{,}{n}{}{}
 \setlength{\bibsep}{0pt}
 \newcommand{\upcite}[1]{\textsuperscript{\cite{#1}}}
