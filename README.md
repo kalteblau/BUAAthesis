@@ -22,8 +22,8 @@
 
 2. 使用 Makefile，需要所使用的命令行环境支持 Make，cd 到 BUAAthesis 相应目录，目前支持以下功能
 
-+ `make bachelor` # 编译本科生的 LATEX（文件默认项，亦可直接输入 make）
-+ `make master` # 编译研究生的 LATEX 文件
++ `make bachelor` # 编译本科生的 LaTeX（文件默认项，亦可直接输入 make）
++ `make master` # 编译研究生的 LaTeX 文件
 + `make clean` # 删除编译过程中生成的文件（除了 pdf）
 + `make depclean` # 删除编译过程中生成的文件（包括 pdf）
 
