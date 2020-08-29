@@ -1,4 +1,3 @@
-% !Mode:: "TeX:UTF-8"
 %%%%% 'buaathesis.cls' BEGIN
 
 %%%%%%%%%% class clarification %%%%%%%%%%
@@ -6,9 +5,9 @@
 
 \NeedsTeXFormat{LaTeX2e}[2007/10/19]
 \ProvidesClass{buaathesis}
-              [2020/03/05 v0.9
+              [2020/08/29 v0.9.1
 The LaTeX template for thesis of BUAA]
-\typeout{Document Class `buaathesis' v0.9 by BHOSC (2020/03)}
+\typeout{Document Class `buaathesis' v0.9.1 by BHOSC (2020/08)}
 
 %%%%%%%%%% class options %%%%%%%%%%
 % 模板选项
@@ -61,6 +60,18 @@ The LaTeX template for thesis of BUAA]
 \setCJKfamilyfont{hwxingkai}{STXingkai}
 \newcommand{\hwxingkai}{\CJKfamily{hwxingkai}}
 \newcommand{\xiaochuhao}{\fontsize{32pt}{\baselineskip}\selectfont}
+% 添加黑体AutoFakeBold
+\let\heiti\relax 
+\newCJKfontfamily\heiti{SimHei}[AutoFakeBold]
+% 添加宋体AutoFakeBold和AutoFakeSlant
+\let\songti\relax
+\newCJKfontfamily\songti{SimSun}[AutoFakeBold,AutoFakeSlant]
+
+% Fix txtt font warning
+\usepackage{lmodern}
+
+% Fix font size warning
+\RequirePackage{anyfontsize}
 
 %%%%%%%%%% color %%%%%%%%%%
 % 颜色设置
@@ -422,7 +433,6 @@ The LaTeX template for thesis of BUAA]
     \renewcommand{\thetable}{\arabic{chapter}.\arabic{table}}
     \renewcommand{\theequation}{\arabic{chapter}.\arabic{equation}}
 \else
-    \RequirePackage{remreset}
     \@removefromreset{table}{chapter}
     \@removefromreset{figure}{chapter}
     %使图表的标号与章节无关
@@ -563,7 +573,7 @@ The LaTeX template for thesis of BUAA]
             \begin{center}
                 \begin{spacing}{1.5}
                     {
-                        \zihao{5}\heiti
+                        \zihao{5}\heiti\bfseries
                         \begin{flushleft}
                             中图分类号：\buaa@category  \\
 							%中图分类号：\buaa@category\hfill 密级\ding{73}~~\buaa@mibao \\ % 保密论文时用此行代码替换上行代码即可
